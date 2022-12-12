@@ -1,3 +1,4 @@
+
 // Include Libraries#
 #include <M5Core2.h>
 #include <WiFi.h>
@@ -7,10 +8,11 @@
 #define MQ3 35
 
 
-
+//the network to connect to
 const char* ssid = "Room19";
 const char* password = "passpass2";
 
+//variables that we used to calibrate the values of the MQ3 sensor
 float sensorValue;
 float sensor_volt;
 float RS_gas;
@@ -20,13 +22,21 @@ float BAC= 0.0F;
 float Per_Alc= 0.0F;
 int R2 = 2000;
 
+//teh server that we will send and receive email messages through it and its port
 const char* smtp_server = "smtp.gmail.com";
 const int smtp_port = 587;
+
+//the email of the m5stack and its password
 const char* email_username = "m5stackcore2nyu@gmail.com";
 const char* email_password = "arumvwnnhdypafll";
+
+//using the library EMailSender to assign email_username as the sender
 EMailSender emailSend(email_username, email_password);
 
+//the email of the recipient
 const char* recipient = "mkassem582@gmail.com";
+
+//void function to ask the user to press any button to start the process
 void start_prog(){
   M5.Lcd.setTextSize(2.5);
   M5.Lcd.fillScreen(BLACK);
@@ -41,25 +51,38 @@ void start_prog(){
     M5.update();      
   }
 }
+
+//the setup of the m5stack
 void setup() {
+
+  //begining the process
   M5.begin();
-  // Connect to WiFi
+  
+  //calling the function start_prog to display the intial 
   start_prog();
+  
+  //clearing what appears after the user presses a button
   M5.Lcd.clear();
   
+  // Connect to WiFi
   M5.Lcd.print("Connecting to WiFi: ");
   M5.Lcd.print(ssid);
   WiFi.begin(ssid, password);
+  
+  //if the m5stack doesn't connect to wifi it will print dots
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     M5.Lcd.print(".");
     WiFi.begin(ssid, password);
   }
+  
   M5.Lcd.println("Connected to WiFi!");
   M5.Lcd.fillScreen(WHITE);
 }
 
+//the loop of the m5stack
 void loop() {
+  //the layout of the alcohol detector on the m5stack
   M5.Lcd.setTextColor(BLACK);
   M5.Lcd.setTextSize(2);
   M5.Lcd.setCursor(20, 10);
@@ -72,6 +95,8 @@ void loop() {
   M5.Lcd.setTextSize(3);
   M5.Lcd.setCursor(110, 110);
 
+
+  //calibration of the sensor and converting the values from ppt to gram/deciliter
   sensorValue = analogRead(MQ3);
   sensor_volt = sensorValue / 1024 * 5.0;
   RS_gas = ((5.0 * R2) / sensor_volt) - R2;
@@ -80,15 +105,21 @@ void loop() {
   double x = 0.4 * ratio;
   BAC = pow(x, -1.431);
   Per_Alc = BAC * 0.0001;
+
+  //a rectangele that controls the apperance of the level of alcohol 
   M5.Lcd.fillRect(110, 110, 100,30, WHITE); 
+  
   M5.Lcd.printf("%5.2f",Per_Alc);
+
+  //checking if the percent of alcohol is not defined by the sensor, the m5stack will show waiting
   if (isnan(Per_Alc)) {
     M5.Lcd.setCursor(110, 110);
     M5.Lcd.setTextSize(2);
     M5.Lcd.printf("Waiting");
     M5.Lcd.fillCircle(170, 180, 30, YELLOW); 
   }
-   
+
+   // if the percent of alcohol is greater than 0.15 then this person is considered drunk
   if(Per_Alc > 0.15){
     M5.Lcd.fillCircle(170, 180, 30, RED);
     // Send the email
@@ -98,6 +129,7 @@ void loop() {
     EMailSender::Response resp = emailSend.send("mkassem582@gmail.com",message);
     delay(3000);
   }
+  //if the user is not drunk
   else{
     M5.Lcd.fillCircle(170, 180, 30, GREEN);
   }
