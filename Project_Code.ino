@@ -27,14 +27,14 @@ const char* smtp_server = "smtp.gmail.com";
 const int smtp_port = 587;
 
 //the email of the m5stack and its password
-const char* email_username = "m5stackcore2nyu@gmail.com";
-const char* email_password = "arumvwnnhdypafll";
+const char* email_username = "your_email";
+const char* email_password = "your_password";
 
 //using the library EMailSender to assign email_username as the sender
 EMailSender emailSend(email_username, email_password);
 
 //the email of the recipient
-const char* recipient = "mkassem582@gmail.com";
+const char* recipient = "recepientEmail";
 
 //void function to ask the user to press any button to start the process
 void start_prog(){
@@ -73,7 +73,6 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     M5.Lcd.print(".");
-    WiFi.begin(ssid, password);
   }
   
   M5.Lcd.println("Connected to WiFi!");
