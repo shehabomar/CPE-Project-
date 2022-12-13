@@ -13,6 +13,7 @@ const char* ssid = "Room19";
 const char* password = "passpass2";
 
 //variables that we used to calibrate the values of the MQ3 sensor
+float tolerance = 0.15;
 float sensorValue;
 float sensor_volt;
 float RS_gas;
@@ -73,6 +74,7 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     M5.Lcd.print(".");
+    Wifi.begin(ssid,password);
   }
   
   M5.Lcd.println("Connected to WiFi!");
@@ -119,7 +121,7 @@ void loop() {
   }
 
    // if the percent of alcohol is greater than 0.15 then this person is considered drunk
-  if(Per_Alc > 0.15){
+  if(Per_Alc > tolerance){
     M5.Lcd.fillCircle(170, 180, 30, RED);
     // Send the email
     EMailSender::EMailMessage message;
