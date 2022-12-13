@@ -6,14 +6,14 @@
 
 // Pin Definitions
 #define MQ3 35
-
+#define TOLERANCE 0.15
 
 //the network to connect to
 const char* ssid = "Room19";
 const char* password = "passpass2";
 
 //variables that we used to calibrate the values of the MQ3 sensor
-float tolerance = 0.15;
+
 float sensorValue;
 float sensor_volt;
 float RS_gas;
@@ -121,7 +121,7 @@ void loop() {
   }
 
    // if the percent of alcohol is greater than 0.15 then this person is considered drunk
-  if(Per_Alc > tolerance){
+  if(Per_Alc > TOLERANCE){
     M5.Lcd.fillCircle(170, 180, 30, RED);
     // Send the email
     EMailSender::EMailMessage message;
