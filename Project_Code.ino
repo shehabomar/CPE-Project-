@@ -6,6 +6,7 @@
 
 // Pin Definitions
 #define MQ3 35
+//The tolerance of the alcohol percent
 #define TOLERANCE 0.15
 
 //the network to connect to
